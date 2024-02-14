@@ -1,2 +1,0 @@
-model_checkpoint_path: "NNMF_filmTrust_bandwagon_50_36.ckpt"
-all_model_checkpoint_paths: "NNMF_filmTrust_bandwagon_50_36.ckpt"

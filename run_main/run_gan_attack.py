@@ -6,8 +6,9 @@ from NeuralShillMatrix.utils.data_loader import *
 from NeuralShillMatrix.utils.tool_aids import *
 from NeuralShillMatrix.model.train_attacker import Train_Attacker
 
-data_subdir = '..\data\data'
-model_subdir = '..\\result\model_ckpt'
+data_subdir = '..\data\\raw_data'
+data_attack_subdir = '..\data\\attack_data'
+model_subdir = '..\\result\model_checkpoint'
 def gan_attack(data_set_name, attack_method, target_id, final_attack_setting=None):
 
     train_data_path = os.path.join(data_subdir, f'{data_set_name}_train.dat')
@@ -41,7 +42,7 @@ def gan_attack(data_set_name, attack_method, target_id, final_attack_setting=Non
                                                                           final_attack_setting=final_attack_setting)
     gan_attacker.sess.close()
 
-    dst_path = os.path.join('..\data\data_attacked','_'.join([args.dataset_name, str(target_id), attack_method]) + ".dat")
+    dst_path = os.path.join(data_attack_subdir,'_'.join([args.dataset_name, str(target_id), attack_method]) + ".dat")
     append_attack_data_to_file(train_data_path, dst_path, fake_profiles, dataset_class.num_users)
 
 
@@ -49,15 +50,13 @@ if __name__ == '__main__':
 
     args = parse_arguments()
 
-    full_path = os.path.join('..\data', 'data_attacked')
-
     for one_attack_method in args.attack_methods:
 
         attack_method = '_'.join([one_attack_method, str(args.attack_count), str(args.filler_count), str(args.filler_method)]).strip('_')
 
         for target_id in args.targets:
             attackSetting_path = '_'.join(map(str, [args.dataset_name, args.attack_count, args.filler_count, target_id]))
-            attackSetting_path = os.path.join(full_path, attackSetting_path + '_attackSetting')
+            attackSetting_path = os.path.join(data_attack_subdir, attackSetting_path + '_attackSetting')
 
             real_profiles, filler_indicator = np.load(attackSetting_path + '.npy')
             final_attack_setting = [args.attack_count, real_profiles, filler_indicator]

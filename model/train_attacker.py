@@ -11,7 +11,6 @@ from NeuralShillMatrix.model.attacker.GAN_Attacker import GAN_Attacker
 class Train_Attacker:
     def __init__(self, dataset_class, params_D, params_G, target_id, selected_id_list,
                  filler_num, attack_num, filler_method):
-        # TODO:init refine
         # data set info
         self.dataset_class = dataset_class
         self.num_user = dataset_class.num_users
@@ -83,8 +82,7 @@ class Train_Attacker:
                 self.epoch_G = epoch_G
                 loss_G, loss_G_array, g_out_seed, log_info = self.train_G()
                 with open(self.log_path, "a+") as fout:
-                    log_tmp = 'G' + str(epoch_G) + ':' + str(round(loss_G, 5)) \
-                              + str(loss_G_array) + str(g_out_seed) + str(log_info)
+                    log_tmp = 'G' + str(epoch_G) + ':' + str(round(loss_G, 5)) + str(loss_G_array) + str(g_out_seed) + str(log_info)
                     fout.write(log_tmp + "\n")
                     fout.flush()
                 print('G', epoch_G, ':', round(loss_G, 5), loss_G_array, g_out_seed, log_info)
