@@ -5,7 +5,7 @@ from NeuralShillMatrix.utils.data_loader import *
 from NeuralShillMatrix.utils.tool_aids import *
 from NeuralShillMatrix.model.attacker.baseline import BaselineAttack
 
-data_subdir = '..\data\\raw_data'
+data_subdir = '../data/raw_data'
 def load_dataset_attack_info(dataset_name):
     """
     Load dataset and corresponding attack information.
@@ -79,7 +79,7 @@ if __name__ == '__main__':
 
     data_set, attack_info = load_dataset_attack_info(args.dataset_name)
 
-    full_path = os.path.join('..\data', 'attack_data')
+    full_path = os.path.join('../data', 'attack_data')
     os.makedirs(full_path, exist_ok=True)
 
     for target_id in args.targets:
@@ -89,5 +89,5 @@ if __name__ == '__main__':
             fake_profiles = generate_baseline_attack_profiles(data_set, attack_info, attack_model, target_id,args.bandwagon_selected, None)
 
             ori_path = os.path.join(data_subdir, f'{args.dataset_name}_train.dat')
-            dst_path = os.path.join('..\data\\attack_data', '_'.join([args.dataset_name, str(target_id), attack_model]) + ".dat")
+            dst_path = os.path.join('../data/attack_data', '_'.join([args.dataset_name, str(target_id), attack_model]) + ".dat")
             append_attack_data_to_file(ori_path, dst_path, fake_profiles, data_set.num_users)

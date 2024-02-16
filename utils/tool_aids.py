@@ -95,19 +95,21 @@ def parse_arguments():
 
     parser.add_argument('--dataset_name', type=str, default='filmTrust', help='filmTrust/ml100k/grocery')
 
-    parser.add_argument('--attack_methods', type=str, default='gan,average,segment,random,bandwagon', help='gan,average,segment,random,bandwagon')
+    parser.add_argument('--attack_methods', type=str, default='gan,BigGan,average,segment,random,bandwagon', help='gan,average,segment,random,bandwagon')
 
     parser.add_argument('--model_name', type=str, default='NNMF', help='NNMF,IAutoRec,UAutoRec,NMF_25')
 
-    parser.add_argument('--targets', type=str, default='1808',help='Target item id')
+    parser.add_argument('--targets', type=str, default='1689',help='Target item id')
 
     parser.add_argument('--attack_count', type=int, default=50, help='fixed 50')
 
-    parser.add_argument('--filler_count', type=int, default=36, help='90 for ml100k,36 for filmTrust')
+    parser.add_argument('--filler_count', type=int, default=16, help='90 for ml100k,36 for filmTrust')
 
     parser.add_argument('--filler_method', type=str, default='', help='0/1/2/3')
 
     parser.add_argument('--bandwagon_selected', type=str, default='103,98,115',help='The target item of the trend selection')
+
+    parser.add_argument('--multiple_objectives', type=int, default='1',help='0&1')
 
     args = parser.parse_args()
     #

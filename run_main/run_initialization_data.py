@@ -156,7 +156,8 @@ def select_experiment(dataset_name, selection_number, target_user_count):
 
 if __name__ == '__main__':
     dataset_name = 'filmTrust'
-    gzip_path = "C:\\Users\\surface\\PycharmProjects\\ShillingAttack\\NeuralShillMatrix\\data\\Ratings.txt"
+    # gzip_path = "C:\\Users\\surface\\PycharmProjects\\ShillingAttack\\NeuralShillMatrix\\data\\Ratings.txt"
+    gzip_path = "/Users/wangkai/PycharmProjects/ShillingAttack/NeuralShillMatrix/data/Ratings.txt"
     preprocess_dataset(dataset_name, gzip_path)
 
     select_experiment(dataset_name, selection_number=3, target_user_count=30)

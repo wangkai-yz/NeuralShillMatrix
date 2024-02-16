@@ -6,9 +6,9 @@ from NeuralShillMatrix.utils.data_loader import *
 from NeuralShillMatrix.utils.tool_aids import *
 from NeuralShillMatrix.model.train_attacker import Train_Attacker
 
-data_subdir = '..\data\\raw_data'
-data_attack_subdir = '..\data\\attack_data'
-model_subdir = '..\\result\model_checkpoint'
+data_subdir = '../data/raw_data'
+data_attack_subdir = '../data/attack_data'
+model_subdir = '../result/model_checkpoint'
 def gan_attack(data_set_name, attack_method, target_id, final_attack_setting=None):
 
     train_data_path = os.path.join(data_subdir, f'{data_set_name}_train.dat')
@@ -20,11 +20,11 @@ def gan_attack(data_set_name, attack_method, target_id, final_attack_setting=Non
 
     model_path = os.path.join(model_subdir, '_'.join([data_set_name, attack_method, str(target_id)]) + ".ckpt")
 
-
-
     attack_info = parse_attack_info(*attack_info_paths)
-    dataset_class = DataLoader(path_to_train_data=train_data_path, path_to_test_data=test_data_path, file_header=['user_id', 'item_id', 'rating'],
-                              delimiter='\t', enable_logging=True)
+    dataset_class = DataLoader(path_to_train_data=train_data_path,
+                               path_to_test_data=test_data_path,
+                               file_header=['user_id', 'item_id', 'rating'],
+                               delimiter='\t', enable_logging=True)
 
     if len(attack_method.split('_')[1:]) == 2:
         attack_num, filler_num = map(int, attack_method.split('_')[1:])
@@ -33,7 +33,6 @@ def gan_attack(data_set_name, attack_method, target_id, final_attack_setting=Non
         attack_num, filler_num, filler_method = map(int, attack_method.split('_')[1:])
     selected_items = attack_info[target_id][0]
 
-    #
     gan_attacker = Train_Attacker(dataset_class, params_D=None, params_G=None, target_id=target_id,
                                       selected_id_list=selected_items,
                                       filler_num=filler_num, attack_num=attack_num, filler_method=filler_method)
@@ -59,5 +58,5 @@ if __name__ == '__main__':
             attackSetting_path = os.path.join(data_attack_subdir, attackSetting_path + '_attackSetting')
 
             real_profiles, filler_indicator = np.load(attackSetting_path + '.npy')
-            final_attack_setting = [args.attack_count, real_profiles, filler_indicator]
-            gan_attack(args.dataset_name, attack_method, target_id, final_attack_setting=final_attack_setting)
+            attack_setting = [args.attack_count, real_profiles, filler_indicator]
+            gan_attack(args.dataset_name, attack_method, target_id, final_attack_setting=attack_setting)

@@ -38,7 +38,6 @@ class BigGAN_3_Attacker:
         y = input
         layer = 0
         L2norm = 0
-        print('st', y.shape)
         # for layer in range(hiddenLayers - 1):
         while True:
             y, this_L2, W, b = self.FullyConnectedLayer_1D(y, h, h // decay, 'none', name, layer + 1, reuse=_reuse)

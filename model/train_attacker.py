@@ -6,6 +6,7 @@ except:
 import numpy as np
 import random, time
 from NeuralShillMatrix.utils.tool_aids import *
+from NeuralShillMatrix.model.attacker.BigGAN_3_Attacker import BigGAN_3_Attacker
 from NeuralShillMatrix.model.attacker.GAN_Attacker import GAN_Attacker
 
 class Train_Attacker:
@@ -239,7 +240,7 @@ class Train_Attacker:
         # big cap
         if self.filler_method == 3:
             print("\n==\n==\n修改路径！！\n==\n")
-            attack_info_path = ["../data/data/filmTrust_selected_items", "../data/data/filmTrust_selected_items"]
+            attack_info_path = ["../data/raw_data/filmTrust_selected_items", "../data/raw_data/filmTrust_selected_items"]
             attack_info = parse_attack_info(*attack_info_path)
             target_users = attack_info[self.target_id][1]
             uid_values = self.dataset_class.train_data.user_id.values
@@ -410,30 +411,30 @@ class Train_Attacker:
 
         return total_loss_d, d_info, log_info
 
-    def filler_sampler(self, uid_list):
-        batch_filler_indicator = []
-        if self.filler_method == 0:
-            for uid in uid_list:
-                filler_candi = np.array(list(set(self.filler_candi_list) & set(self.dataset_class.train_matrix[uid].toarray()[0].nonzero()[0])))
-
-                if len(filler_candi) > self.filler_num:
-                    filler_candi = np.random.choice(filler_candi, size=self.filler_num, replace=False)
-                filler_indicator = [1 if iid in filler_candi else 0 for iid in range(self.num_item)]
-                batch_filler_indicator.append(filler_indicator)
-            return batch_filler_indicator
-        else:
-            for uid in uid_list:
-                filler_candi = np.array(list(set(self.filler_candi_list) & set(self.dataset_class.train_matrix[uid].toarray()[0].nonzero()[0])))
-                if len(filler_candi) > self.filler_num:
-                    prob = self.item_avg[filler_candi] if self.filler_method == 1 \
-                        else self.item_pop[filler_candi] if self.filler_method == 2 \
-                        else self.item_big_cap[filler_candi] if self.filler_method == 3 \
-                        else None
-                    prob = None if prob is None else prob / sum(prob)
-                    filler_candi = np.random.choice(filler_candi, size=self.filler_num, replace=False, p=prob)
-                filler_indicator = [1 if iid in filler_candi else 0 for iid in range(self.num_item)]
-                batch_filler_indicator.append(filler_indicator)
-            return batch_filler_indicator
+    # def filler_sampler(self, uid_list):
+    #     batch_filler_indicator = []
+    #     if self.filler_method == 0:
+    #         for uid in uid_list:
+    #             filler_candi = np.array(list(set(self.filler_candi_list) & set(self.dataset_class.train_matrix[uid].toarray()[0].nonzero()[0])))
+    #
+    #             if len(filler_candi) > self.filler_num:
+    #                 filler_candi = np.random.choice(filler_candi, size=self.filler_num, replace=False)
+    #             filler_indicator = [1 if iid in filler_candi else 0 for iid in range(self.num_item)]
+    #             batch_filler_indicator.append(filler_indicator)
+    #         return batch_filler_indicator
+    #     else:
+    #         for uid in uid_list:
+    #             filler_candi = np.array(list(set(self.filler_candi_list) & set(self.dataset_class.train_matrix[uid].toarray()[0].nonzero()[0])))
+    #             if len(filler_candi) > self.filler_num:
+    #                 prob = self.item_avg[filler_candi] if self.filler_method == 1 \
+    #                     else self.item_pop[filler_candi] if self.filler_method == 2 \
+    #                     else self.item_big_cap[filler_candi] if self.filler_method == 3 \
+    #                     else None
+    #                 prob = None if prob is None else prob / sum(prob)
+    #                 filler_candi = np.random.choice(filler_candi, size=self.filler_num, replace=False, p=prob)
+    #             filler_indicator = [1 if iid in filler_candi else 0 for iid in range(self.num_item)]
+    #             batch_filler_indicator.append(filler_indicator)
+    #         return batch_filler_indicator
 
     def sample_filler_items(self, user_indices):
         """

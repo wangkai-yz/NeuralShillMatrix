@@ -6,7 +6,7 @@ from NeuralShillMatrix.utils.data_loader import *
 from NeuralShillMatrix.utils.tool_aids import *
 from NeuralShillMatrix.model.train_attacker import Train_Attacker
 
-data_subdir = '..\data\\raw_data'
+data_subdir = '../data/raw_data'
 def load_dataset_attack_info(dataset_name):
     """
     Load dataset and corresponding attack information.
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     data_set, attack_info = load_dataset_attack_info(args.dataset_name)
 
-    full_path = os.path.join('..\data', 'attack_data')
+    full_path = os.path.join('../data', 'attack_data')
     os.makedirs(full_path, exist_ok=True)
 
     for target_id in args.targets:
