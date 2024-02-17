@@ -17,19 +17,19 @@ def read_data(file_path):
     return data
 
 def get_item_rating_probability(df, all_ratings):
-    # 四舍五入ratings，改0评分为1
+    # Round off the ratings, changing 0 to 1
     df['rating'] = df['rating'].round().astype(int)
     df['rating'] = df['rating'].replace(0, 1)
 
-    # 计算每个iid不同ratings的概率
+    # The probability of different ratings for each iid is calculated
     item_rating_probability = df.pivot_table(index='iid', columns='rating', aggfunc='size', fill_value=0)
 
-    # 添加缺失的评分列（如果有）
+    # Add the missing rating column (if any)
     for rating in all_ratings:
         if rating not in item_rating_probability:
             item_rating_probability[rating] = 0
 
-    # 将计数转换为概率
+    # Convert the counts to probabilities
     item_rating_probability = item_rating_probability.div(item_rating_probability.sum(axis=1), axis=0)
     return item_rating_probability
 

@@ -36,8 +36,6 @@ class BaselineAttack:
     def random_attack(self):
         """
         Generate random attack profiles.
-
-
         """
         filler_candidates = list(set(range(self.num_items)) - {self.target_item_id})
         fake_profiles = np.zeros(shape=[self.attack_count, self.num_items], dtype=float)

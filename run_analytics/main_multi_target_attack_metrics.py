@@ -75,6 +75,10 @@ def count_full_hit_rates(data):
     return full_hits
 
 def calculate_impact(pre_attack_data, post_attack_data, alpha=0.4, beta=0.3, gamma=0.3):
+    """
+    计算攻击的综合影响分数。
+    Calculate the composite impact score of an attack.
+    """
     # 计算排名变化
     rank_change = pre_attack_data['rank'].replace('None', 51).fillna(51).astype(float) - post_attack_data['rank'].replace('None', 51).fillna(51).astype(float)
     avg_rank_change = rank_change.mean()

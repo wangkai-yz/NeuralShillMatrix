@@ -34,7 +34,7 @@ def load_dataset_attack_info(dataset_name):
 def generate_baseline_attack_profiles(data_source, attack_config, attack_strategy, target_item_id, popular_items,
                                       specified_fillers=None):
     """
-    根据基线攻击策略生成假用户评分配置文件。
+    Fake user rating profiles are generated according to the baseline attack strategy.
 
     Args:
         data_source: 包含数据集信息的类实例。
@@ -51,15 +51,15 @@ def generate_baseline_attack_profiles(data_source, attack_config, attack_strateg
     attack_type, num_fake_profiles, num_fillers = attack_strategy.split('_')
     num_fake_profiles, num_fillers = int(num_fake_profiles), int(num_fillers)
 
-    # 获取数据集全局和项目级的平均评分及标准差
+    # Get the global and item-level average rating and standard deviation of the dataset
     global_avg, global_std, item_avgs, item_stds = data_source.calculate_all_mean_std()
 
-    # 初始化基线攻击器实例
+    # Initialize the baseline attacker instance
     attacker = BaselineAttack(num_fake_profiles, num_fillers, data_source.num_items, target_item_id,
                               global_avg, global_std, item_avgs, item_stds, max_rating=5.0, min_rating=1.0,
                               fixed_filler_indicator=specified_fillers)
 
-    # 根据攻击类型选择对应的攻击方法
+    # The corresponding attack method is selected according to the attack type
     if attack_type == "random":
         fake_profiles = attacker.random_attack()
     elif attack_type == "bandwagon":

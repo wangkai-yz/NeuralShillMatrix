@@ -1,7 +1,7 @@
 import sys
 
 sys.path.append("../../")
-from NeuralShillMatrix.utils.evaluation_utils import rec_trainer
+from NeuralShillMatrix.utils.evaluation_utils import train_evaluate_recommendation_model
 from NeuralShillMatrix.utils.data_loader import *
 from NeuralShillMatrix.utils.tool_aids import *
 
@@ -9,8 +9,19 @@ data_subdir = '../data/raw_data'
 data_attacked_subdir = '../data/attack_data'
 model_subdir = '../result/model_checkpoint'
 result_subdir = '../result/model_evaluation'
-def train_rec(data_set_name, model_name, attack_method, target_id, is_train,  target_dir=None):
+def train_evaluation_model(data_set_name, model_name, attack_method, target_id, is_train,  target_dir=None):
+    """
+    训练和评估模型。
+    Train and evaluate a model based on the specified parameters.
 
+    参数 Parameters:
+    - data_set_name: 数据集名称。
+    - model_name: 模型名称。
+    - attack_method: 攻击方法。
+    - target_id: 目标ID。
+    - is_train: 是否训练模式。
+    - target_dir: 指定目标目录（可选）。
+    """
     if target_dir == None:
         if attack_method == "no":
             model_path = os.path.join(model_subdir, '_'.join([model_name, data_set_name]) + ".ckpt")
@@ -36,12 +47,19 @@ def train_rec(data_set_name, model_name, attack_method, target_id, is_train,  ta
                               file_header=['user_id', 'item_id', 'rating'],
                               delimiter='\t', enable_logging=True)
 
-    predictions, hit_ratios, target_ranks = rec_trainer(model_name, dataset_class, target_id, is_train,model_path)
+    predictions, hit_ratios, target_ranks = train_evaluate_recommendation_model(model_name, dataset_class, target_id, is_train,model_path)
     print(f"Completed evaluation: {attack_method} {dst_path}")
     write_predictions_to_file(predictions, hit_ratios, target_ranks, dst_path)
 
 def run_entry(args, target_dir=None):
+    """
+    根据提供的参数运行训练和评估流程。
+    Run the training and evaluation process based on provided arguments.
 
+    参数 Parameters:
+    - args: 命令行参数。
+    - target_dir: 指定目标目录（可选）。
+    """
     for one_attack_method in args.attack_methods:
         if one_attack_method == 'no':
             attack_method_ = one_attack_method
@@ -49,12 +67,12 @@ def run_entry(args, target_dir=None):
             attack_method_ = '_'.join([one_attack_method, str(args.attack_count), str(args.filler_count)])
 
         is_train = 1
-        train_rec(args.dataset_name, args.model_name, attack_method_, args.targets[0], is_train=is_train, target_dir=target_dir)
+        train_evaluation_model(args.dataset_name, args.model_name, attack_method_, args.targets[0], is_train=is_train, target_dir=target_dir)
 
         for target in args.targets[1:]:
             if args.attack_method == 'no':
                 is_train = 0
-            train_rec(args.dataset, args.model_name, attack_method_, target, is_train=is_train, target_dir=target_dir)
+            train_evaluation_model(args.dataset, args.model_name, attack_method_, target, is_train=is_train, target_dir=target_dir)
 
 if __name__ == '__main__':
 

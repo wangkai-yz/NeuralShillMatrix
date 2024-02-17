@@ -5,39 +5,12 @@ from sklearn.metrics.pairwise import cosine_similarity
 from itertools import combinations
 from scipy.spatial.distance import cosine
 
-# def cosine_similarity_calculation(data):
-#     """
-#     计算用户间的余弦相似性
-#     """
-#     # 创建用户和项目的矩阵
-#     rating_matrix = data.pivot_table(index='uid', columns='iid', values='rating').fillna(0)
-#
-#     # 计算用户间的余弦相似性
-#     user_similarity = pd.DataFrame(cosine_similarity(rating_matrix), index=rating_matrix.index,
-#                                    columns=rating_matrix.index)
-#
-#     # 创建网络图
-#     G = nx.Graph()
-#
-#     # Add nodes (users)
-#     for user in rating_matrix.index:
-#         G.add_node(user)
-#
-#     # 根据相似度在用户之间添加边
-#     # 仅为相似度高于一定阈值的用户添加边，以避免生成完整的图
-#     threshold = 0.5  # This threshold can be adjusted
-#     for user1 in rating_matrix.index:
-#         for user2 in rating_matrix.index:
-#             if user1 != user2 and user_similarity.loc[user1, user2] > threshold:
-#                 G.add_edge(user1, user2, weight=user_similarity.loc[user1, user2])
-#
-#     return G.number_of_nodes(), G.number_of_edges()
 
 def item_similarity_calculation(data):
-    # 创建用户和项目的矩阵
+    # Create a matrix of users and items
     rating_matrix = data.pivot_table(index='iid', columns='uid', values='rating').fillna(0)
 
-    # 计算项目间的余弦相似性
+    # Calculate the cosine similarity between items
     item_similarity = pd.DataFrame(cosine_similarity(rating_matrix), index=rating_matrix.index,
                                    columns=rating_matrix.index)
     return item_similarity
@@ -45,16 +18,17 @@ def item_similarity_calculation(data):
 def find_least_related_items(data, num_items=3):
     item_similarity = item_similarity_calculation(data)
 
-    # 计算每个项目与所有其他项目的平均相似度
+    # The average similarity of each item with all other items is calculated
     average_similarity = item_similarity.mean()
 
-    # 找出平均相似度最低的项目
+    # Find the item with the lowest average similarity
     least_related_items = average_similarity.nsmallest(num_items).index
     return least_related_items
 
 def cosine_similarity_calculation(data):
     """
     计算项目间的余弦相似性
+    Calculate the cosine similarity between items
     """
     # 创建用户和项目的矩阵，并进行转置以得到项目-用户矩阵
     item_matrix = data.pivot_table(index='iid', columns='uid', values='rating').fillna(0)
@@ -67,6 +41,7 @@ def cosine_similarity_calculation(data):
 def find_least_similar_items(item_similarity, target_items):
     """
     在目标项目列表中找出最不相关的三个项目。
+    Find the three least relevant items in the list of target items.
     """
     min_similarity = {}
     for item in target_items:
@@ -80,6 +55,7 @@ def find_least_similar_items(item_similarity, target_items):
 def find_most_similar_triplet(item_similarity, target_items):
     """
     在目标项目列表中找出三个彼此之间最相关的项目。
+    Find the three items in the list of target items that are most related to each other.
     """
     best_triplet = None
     highest_avg_similarity = -np.inf  # 初始化为负无穷大
@@ -99,6 +75,7 @@ def find_most_similar_triplet(item_similarity, target_items):
 def get_target_items_similarity(item_similarity, target_items):
     """
     输出目标项目列表的余弦相似性。
+    Outputs the cosine similarity of a list of target items.
     """
     # 选取目标项目之间的相似度
     target_similarity = item_similarity.loc[target_items, target_items]

@@ -5,6 +5,8 @@ import pandas as pd
 def calculate_rank_changes_modified(pre_attack_data, post_attack_data):
     """
     计算pred_rating和rank的差值的平均数和方差。
+
+    Calculate the mean and variance of the difference between pred_rating and rank.
     """
     # 将字符串转换为数值，对于rank，将None替换为51
     pre_attack_data['pred_rating'] = pre_attack_data['pred_rating'].astype(float)
@@ -34,6 +36,8 @@ def calculate_rank_changes_modified(pre_attack_data, post_attack_data):
 def write_rank_changes_to_file(rank_changes, file_path):
     """
     将排名变化的数据写入到文件中。
+
+    Write the rank change data to a file.
     """
     # 将rank_changes转换为DataFrame（如果它还不是）
     if not isinstance(rank_changes, pd.DataFrame):
@@ -47,6 +51,9 @@ def read_data(file_path):
     """
     读取.dat文件并返回DataFrame。
     假定数据的格式如上所述，以制表符或空格分隔。
+
+    Read the.dat file and return a DataFrame.
+    The data is assumed to be in the format described above, separated by tabs or Spaces.
     """
     # 读取数据
     data = pd.read_csv(file_path, sep='\s+', header=None)
@@ -60,12 +67,18 @@ def read_data(file_path):
 def filter_fake_data_by_real(real_df, fake_df):
     """
     删除fake_df中不存在于real_df的uid。
+
+    Remove Uids in fake_df that do not exist in real_df.
     """
     common_uid = real_df['uid'].unique()
     filtered_fake_df = fake_df[fake_df['uid'].isin(common_uid)]
     return filtered_fake_df
 
 def calculate_impact(pre_attack_data, post_attack_data, alpha=0.4, beta=0.3, gamma=0.3):
+    """
+    计算攻击的综合影响分数。
+    Calculate the composite impact score of an attack.
+    """
     # 计算排名变化
     rank_change = pre_attack_data['rank'].replace('None', 51).fillna(51).astype(float) - post_attack_data['rank'].replace('None', 51).fillna(51).astype(float)
     avg_rank_change = rank_change.mean()
@@ -84,7 +97,10 @@ def calculate_impact(pre_attack_data, post_attack_data, alpha=0.4, beta=0.3, gam
     return composite_impact_score
 
 def generate_according_by_attack_mode(rm_list, tid_list, a_list, b_path, cb_path):
-
+    """
+    根据攻击模式生成评估结果并写入CSV文件。
+    Generate evaluation results according to attack modes and write to CSV files.
+    """
     columns = ["Model Name", "Target Id", "Attack Type",
                "Avg Pred Rating Diff", "Var Pred Rating Diff","Std Pred Rating Diff",
                "Avg Rank Diff", "Var Rank Diff", "Std Rank Diff",

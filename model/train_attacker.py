@@ -114,13 +114,12 @@ class Train_Attacker:
 
         if real_vector is None or filler_indicator is None:
             batchList = self.batchList.copy()
-            # 如果batchList中用户数量不够，那就无限循环补全，直到满足fake_num。
+            # If the batchlist is not enough for the number of families, the infinite loop will be filled up until the fake_numis.
             while fake_num > len(batchList):
                 batchList += batchList
             random.shuffle(batchList)
             sampled_index = batchList[:fake_num]
             real_vector = self.dataset_class.train_matrix[sampled_index].toarray()
-            # filler_indicator = self.filler_sampler(sampled_index)
             filler_indicator = self.sample_filler_items(sampled_index)
 
 
@@ -282,7 +281,6 @@ class Train_Attacker:
                         [1 if i == 1 or random.random() < self.ZR_ratio else 0 for i in
                          batch_mask_ZR[idx][self.selected_id_list]]
 
-            # batch_filler_indicator = self.filler_sampler(batch_index)
             batch_filler_indicator = self.sample_filler_items(batch_index)
 
             batch_run_res = self.sess.run(
@@ -312,6 +310,8 @@ class Train_Attacker:
     def train_D(self):
         """
         每个epoch各产生self.batchSize_D个realData和fakeData
+
+        Each epoch produces self.batchSize_D realData and fakeData
         """
         t1 = time.time()
         random.seed(int(t1))
@@ -330,7 +330,6 @@ class Train_Attacker:
                 batch_index = self.batchList[batch_id * self.batchSize_D: (batch_id + 1) * self.batchSize_D]
             batch_size = len(batch_index)
             batch_real_vector = self.dataset_class.train_matrix[batch_index].toarray()
-            # batch_filler_indicator = self.filler_sampler(batch_index)
             batch_filler_indicator = self.sample_filler_items(batch_index)
 
             # optimize
@@ -411,31 +410,6 @@ class Train_Attacker:
 
         return total_loss_d, d_info, log_info
 
-    # def filler_sampler(self, uid_list):
-    #     batch_filler_indicator = []
-    #     if self.filler_method == 0:
-    #         for uid in uid_list:
-    #             filler_candi = np.array(list(set(self.filler_candi_list) & set(self.dataset_class.train_matrix[uid].toarray()[0].nonzero()[0])))
-    #
-    #             if len(filler_candi) > self.filler_num:
-    #                 filler_candi = np.random.choice(filler_candi, size=self.filler_num, replace=False)
-    #             filler_indicator = [1 if iid in filler_candi else 0 for iid in range(self.num_item)]
-    #             batch_filler_indicator.append(filler_indicator)
-    #         return batch_filler_indicator
-    #     else:
-    #         for uid in uid_list:
-    #             filler_candi = np.array(list(set(self.filler_candi_list) & set(self.dataset_class.train_matrix[uid].toarray()[0].nonzero()[0])))
-    #             if len(filler_candi) > self.filler_num:
-    #                 prob = self.item_avg[filler_candi] if self.filler_method == 1 \
-    #                     else self.item_pop[filler_candi] if self.filler_method == 2 \
-    #                     else self.item_big_cap[filler_candi] if self.filler_method == 3 \
-    #                     else None
-    #                 prob = None if prob is None else prob / sum(prob)
-    #                 filler_candi = np.random.choice(filler_candi, size=self.filler_num, replace=False, p=prob)
-    #             filler_indicator = [1 if iid in filler_candi else 0 for iid in range(self.num_item)]
-    #             batch_filler_indicator.append(filler_indicator)
-    #         return batch_filler_indicator
-
     def sample_filler_items(self, user_indices):
         """
         根据用户索引列表，为每个用户采样填充项，并生成填充项指示器。
@@ -446,6 +420,15 @@ class Train_Attacker:
         Returns:
             填充项指示器列表，每个元素是一个与数据集中项目数量相等的列表，
             其中，选中作为填充项的项目对应的位置为1，否则为0。
+
+        Based on the user index list, fill items are sampled for each user and a fill item indicator is generated.
+
+        Args:
+            user_indices: A list of user indices
+
+        Returns:
+            Populate the item indicator list, where each element is a list equal to the number of items in the dataset,
+            Where the position corresponding to the item selected as a fill item is 1, otherwise it is 0.
         """
         filler_indicators = []  # 初始化填充项指示器列表
         for user_index in user_indices:
@@ -478,6 +461,14 @@ class Train_Attacker:
 
         Returns:
             每个填充项候选的选择概率列表。
+
+        The selection probability of each padding candidate is calculated according to the current padding method.
+
+        Args:
+            filler_candidates: Fill the candidate list of items
+
+        Returns:
+            A list of selection probabilities for each fill item candidate.
         """
         if self.filler_method == 1:
             probabilities = self.item_avg[filler_candidates]

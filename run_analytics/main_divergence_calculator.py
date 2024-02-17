@@ -17,6 +17,10 @@ def read_data(file_path):
     return data
 
 def get_item_rating_probability(df, all_ratings):
+    """
+    计算每个项目的评分概率分布。
+    Calculate the probability distribution of ratings for each item.
+    """
     # 四舍五入ratings，改0评分为1
     df['rating'] = df['rating'].round().astype(int)
     df['rating'] = df['rating'].replace(0, 1)
@@ -99,8 +103,7 @@ if __name__ == '__main__':
                 "Average JS Divergence": [avg_js]
             })
 
-            # 使用concat方法将临时数据框与结果数据框合并
             result_df = pd.concat([result_df, temp_df], ignore_index=True)
-        # 将数据框保存为CSV文件
+
         result_df.to_csv(os.path.join(csv_basic_path, f"{'_'.join(['DC', 'filmTrust', str(target_id)])}.csv"),index=False)
 

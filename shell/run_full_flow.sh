@@ -18,24 +18,24 @@ for i in "${!target_ids_list[@]}"; do
   echo "$i $target_ids and bandwagon selected: $bandwagon_selected"
 
   #生成攻击设置数据
-  echo "$i $target_ids 生成攻击设置数据"
+  echo "$i $target_ids Generate attack setup data"
   python3.8 ../run_main/run_initialization_attack.py --dataset_name filmTrust --targets "${target_ids}" --attack_count 50 --filler_count 16
   #进行基线攻击
-  echo "$i $target_ids 进行基线攻击"
+  echo "$i $target_ids Performing baseline attacks"
   python3.8 ../run_main/run_baseline_attack.py --dataset_name filmTrust --attack_methods average,segment,random,bandwagon --targets "${target_ids}" --attack_count 50 --filler_count 16 --bandwagon_selected "${bandwagon_selected}"
   #进行gan攻击
-  echo "$i $target_ids 进行gan攻击"
+  echo "$i $target_ids Performing gan attacks"
   python3.8 ../run_main/run_gan_attack.py --dataset_name filmTrust --targets "${target_ids}" --attack_methods gan --attack_count 50 --filler_count 16
 
   for model in NNMF IAutoRec; do
     #推荐系统评估基线攻击
-    echo "$i $target_ids 评估基线攻击 ${model}"
+    echo "$i $target_ids Evaluating baseline attacks ${model}"
     python3.8 ../run_main/run_evaluation_model.py --dataset_name filmTrust --attack_methods average,segment,random,bandwagon --model_name "${model}" --targets "${target_ids}" --attack_count 50 --filler_count 16
 	  #评估攻击前的推荐系统
-    echo "$i $target_ids 评估攻击前的推荐系统 ${model}"
+    echo "$i $target_ids Evaluate the recommender system before the attack ${model}"
     python3.8 ../run_main/run_evaluation_model.py --dataset_name filmTrust --attack_method no --model_name ${model} --targets "${target_ids}" --attack_count 50 --filler_count 16
 
-	  echo "$i $target_ids 评估gan攻击 ${model}"
+	  echo "$i $target_ids Evaluating the attack ${model}"
     python3.8 ../run_main/run_evaluation_model.py --dataset_name filmTrust --attack_method gan --model_name ${model} --targets "${target_ids}" --attack_count 50 --filler_count 16
 	done
 

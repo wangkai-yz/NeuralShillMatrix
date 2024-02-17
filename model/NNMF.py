@@ -12,6 +12,24 @@ class NNMF():
     def __init__(self, sess, dataset_class, num_factor_1=100, num_factor_2=10, hidden_dimension=50,
                  learning_rate=0.001, reg_rate=0.01, epoch=500, batch_size=256,
                  show_time=False, T=5, display_step=1000):
+        """
+        初始化神经网络矩阵分解模型 (NNMF).
+        Initialize the Neural Network Matrix Factorization (NNMF) model.
+
+        参数 Parameters:
+        - sess: TensorFlow session.
+        - dataset_class: 数据集类，包含用户、项目信息及评分矩阵。
+        - num_factor_1: 第一层因子的数量。
+        - num_factor_2: 第二层因子的数量。
+        - hidden_dimension: 隐藏层维度。
+        - learning_rate: 学习率。
+        - reg_rate: 正则化率。
+        - epoch: 训练周期数。
+        - batch_size: 批次大小。
+        - show_time: 是否显示训练时间。
+        - T: 显示训练信息的周期。
+        - display_step: 显示步骤间隔。
+        """
         self.learning_rate = learning_rate
         self.epochs = epoch
         self.batch_size = batch_size
@@ -40,6 +58,10 @@ class NNMF():
         self.sess.run(init)
 
     def _build_network(self):
+        """
+        构建模型网络结构，包括嵌入层和全连接层。
+        Build the model network structure, including embedding layers and fully connected layers.
+        """
         print("num_factor_1=%d, num_factor_2=%d, hidden_dimension=%d" % (
             self.num_factor_1, self.num_factor_2, self.hidden_dimension))
 
@@ -59,9 +81,7 @@ class NNMF():
                                   tf.multiply(tf.nn.embedding_lookup(U, self.user_id),
                                               tf.nn.embedding_lookup(V, self.item_id))
                                   ], axis=1)
-        #
         # tf1->tf2
-        # regularizer = tf.contrib.layers.l2_regularizer(scale=self.reg_rate)
         regularizer = tf.keras.regularizers.l2(self.reg_rate)
         layer_1 = tf.layers.dense(inputs=input, units=2 * self.num_factor_1 + self.num_factor_2,
                                   bias_initializer=tf.random_normal_initializer,
@@ -90,6 +110,10 @@ class NNMF():
         self.optimizer = tf.train.RMSPropOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
 
     def train(self):
+        """
+        训练模型并返回最后的损失值。
+        Train the model and return the last loss value.
+        """
         self.num_training = len(self.rating)
         total_batch = int(self.num_training / self.batch_size)
         idxs = np.random.permutation(self.num_training)  # shuffled ordering
@@ -109,6 +133,10 @@ class NNMF():
         return loss
 
     def test(self, test_data):
+        """
+        对测试数据执行预测并计算RMSE和MAE。
+        Perform prediction on test data and calculate RMSE and MAE.
+        """
         error = 0
         error_mae = 0
         test_set = list(test_data.keys())
@@ -121,6 +149,10 @@ class NNMF():
         return rmse, mae
 
     def execute(self):
+        """
+        执行训练过程，并在特定周期打印损失值，最后测试评分预测的准确性。
+        Execute the training process, print the loss at specific intervals, and finally test the accuracy of rating prediction.
+        """
         loss_prev = float("inf")
         for epoch in range(self.epochs):
             loss_cur = self.train()
@@ -133,16 +165,28 @@ class NNMF():
         print("training done\tRMSE : ", rmse, "\tMAE : ", mae)
 
     def save(self, path):
+        """
+        将训练好的模型参数保存到指定路径。
+        Save the trained model parameters to the specified path.
+        """
         saver = tf.train.Saver()
         saver.save(self.sess, path)
 
     def restore(self, path):
+        """
+        从指定路径加载模型参数。
+        Load model parameters from a specified path.
+        """
         init = tf.global_variables_initializer()
         self.sess.run(init)
         saver = tf.train.Saver()
         saver.restore(self.sess, path)
 
     def predict(self, user_id, item_id):
+        """
+        预测指定用户对指定项目的评分。
+        Predict the rating of a specified user for a specified item.
+        """
         if type(item_id) != list:
             item_id = [item_id]
         if type(user_id) != list:
